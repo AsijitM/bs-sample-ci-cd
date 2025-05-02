@@ -1,4 +1,4 @@
-name: CI/CD Pipeline Example with Pytest
+name: CI/CD Pipeline Example with Pytest and Artifacts
 
 on:
   push:
@@ -26,7 +26,6 @@ jobs:
       - name: Build frontend
         run: |
           echo "Building frontend..."
-          # Simulate a build command
           sleep 2
 
       - name: Display commit information
@@ -50,23 +49,29 @@ jobs:
       - name: Run frontend tests (Pytest)
         run: |
           echo "Running frontend tests..."
-          pytest tests/frontend/test_login.py --maxfail=1 --disable-warnings --capture=no > result.log || true
-          tail -n 10 result.log  # Display the last 10 lines of the pytest output
+          pytest tests/frontend/test_login.py \
+            --junitxml=report.xml \
+            --maxfail=1 --disable-warnings --capture=no > result.log || true
+          tail -n 10 result.log
 
-      - name: Output backend test result
+      - name: Upload frontend test report
+        uses: actions/upload-artifact@v3
+        with:
+          name: frontend-test-report
+          path: report.xml
+
+      - name: Output frontend test result
         run: |
           if [[ ! -f result.log ]]; then
             echo "result.log not found!"
-            echo "Backend Test Result: Unknown"
+            echo "Frontend Test Result: Unknown"
             exit 0
           fi
-
           PASS_COUNT=$(grep -c 'PASSED' result.log || echo 0)
           FAIL_COUNT=$(grep -c 'FAILED' result.log || echo 0)
-          echo "Backend Test Result: Passed $PASS_COUNT, Failed $FAIL_COUNT"
-          echo "Test suite executed: backend-test-suite"
-          echo "Dependency: build-backend job"
-
+          echo "Frontend Test Result: Passed $PASS_COUNT, Failed $FAIL_COUNT"
+          echo "Test suite executed: frontend-test-suite"
+          echo "Dependency: build-frontend job"
 
   build-backend:
     runs-on: ubuntu-latest
@@ -85,7 +90,6 @@ jobs:
       - name: Build backend
         run: |
           echo "Building backend..."
-          # Simulate a build command
           sleep 2
 
       - name: Display commit information
@@ -109,8 +113,16 @@ jobs:
       - name: Run backend tests (Pytest)
         run: |
           echo "Running backend tests..."
-          pytest tests/backend/test_checkout.py --maxfail=1 --disable-warnings --capture=no > result.log || true
-          tail -n 10 result.log  # Display the last 10 lines of the pytest output
+          pytest tests/backend/test_checkout.py \
+            --junitxml=report.xml \
+            --maxfail=1 --disable-warnings --capture=no > result.log || true
+          tail -n 10 result.log
+
+      - name: Upload backend test report
+        uses: actions/upload-artifact@v3
+        with:
+          name: backend-test-report
+          path: report.xml
 
       - name: Output backend test result
         run: |
@@ -119,10 +131,8 @@ jobs:
             echo "Backend Test Result: Unknown"
             exit 0
           fi
-
           PASS_COUNT=$(grep -c 'PASSED' result.log || echo 0)
           FAIL_COUNT=$(grep -c 'FAILED' result.log || echo 0)
           echo "Backend Test Result: Passed $PASS_COUNT, Failed $FAIL_COUNT"
           echo "Test suite executed: backend-test-suite"
           echo "Dependency: build-backend job"
-
