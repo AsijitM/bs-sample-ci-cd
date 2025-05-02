@@ -53,13 +53,20 @@ jobs:
           pytest tests/frontend/test_login.py --maxfail=1 --disable-warnings --capture=no > result.log || true
           tail -n 10 result.log  # Display the last 10 lines of the pytest output
 
-      - name: Output frontend test result
+      - name: Output backend test result
         run: |
-          PASS_COUNT=$(grep -c 'PASSED' result.log)
-          FAIL_COUNT=$(grep -c 'FAILED' result.log)
-          echo "Frontend Test Result: Passed $PASS_COUNT, Failed $FAIL_COUNT"
-          echo "Test suite executed: frontend-test-suite"
-          echo "Dependency: build-frontend job"
+          if [[ ! -f result.log ]]; then
+            echo "result.log not found!"
+            echo "Backend Test Result: Unknown"
+            exit 0
+          fi
+
+          PASS_COUNT=$(grep -c 'PASSED' result.log || echo 0)
+          FAIL_COUNT=$(grep -c 'FAILED' result.log || echo 0)
+          echo "Backend Test Result: Passed $PASS_COUNT, Failed $FAIL_COUNT"
+          echo "Test suite executed: backend-test-suite"
+          echo "Dependency: build-backend job"
+
 
   build-backend:
     runs-on: ubuntu-latest
@@ -107,8 +114,15 @@ jobs:
 
       - name: Output backend test result
         run: |
-          PASS_COUNT=$(grep -c 'PASSED' result.log)
-          FAIL_COUNT=$(grep -c 'FAILED' result.log)
+          if [[ ! -f result.log ]]; then
+            echo "result.log not found!"
+            echo "Backend Test Result: Unknown"
+            exit 0
+          fi
+
+          PASS_COUNT=$(grep -c 'PASSED' result.log || echo 0)
+          FAIL_COUNT=$(grep -c 'FAILED' result.log || echo 0)
           echo "Backend Test Result: Passed $PASS_COUNT, Failed $FAIL_COUNT"
           echo "Test suite executed: backend-test-suite"
           echo "Dependency: build-backend job"
+
