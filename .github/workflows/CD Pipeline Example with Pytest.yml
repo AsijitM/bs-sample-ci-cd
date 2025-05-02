@@ -15,7 +15,7 @@ jobs:
       frontend_commit_id: ${{ steps.get_commit_id.outputs.commit_id }}
     steps:
       - name: Check out repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Get Git commit ID
         id: get_commit_id
@@ -39,7 +39,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Install dependencies
         run: |
@@ -79,7 +79,7 @@ jobs:
       backend_commit_id: ${{ steps.get_commit_id.outputs.commit_id }}
     steps:
       - name: Check out repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Get Git commit ID
         id: get_commit_id
@@ -103,7 +103,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Install dependencies
         run: |
