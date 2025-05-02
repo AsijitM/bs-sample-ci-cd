@@ -1,4 +1,4 @@
-name: CI/CD Pipeline Example with Pytest and Artifacts
+name: CI/CD Pipeline Example with Pytest
 
 on:
   push:
@@ -15,7 +15,7 @@ jobs:
       frontend_commit_id: ${{ steps.get_commit_id.outputs.commit_id }}
     steps:
       - name: Check out repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v2
 
       - name: Get Git commit ID
         id: get_commit_id
@@ -26,6 +26,7 @@ jobs:
       - name: Build frontend
         run: |
           echo "Building frontend..."
+          # Simulate a build command
           sleep 2
 
       - name: Display commit information
@@ -39,7 +40,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v2
 
       - name: Install dependencies
         run: |
@@ -49,10 +50,7 @@ jobs:
       - name: Run frontend tests (Pytest)
         run: |
           echo "Running frontend tests..."
-          pytest tests/frontend/test_login.py \
-            --junitxml=report.xml \
-            --maxfail=1 --disable-warnings --capture=no > result.log || true
-          tail -n 10 result.log
+          pytest tests/frontend/test_login.py --junitxml=report.xml --maxfail=1 --disable-warnings --capture=no || true
 
       - name: Upload frontend test report
         uses: actions/upload-artifact@v3
@@ -62,13 +60,14 @@ jobs:
 
       - name: Output frontend test result
         run: |
-          if [[ ! -f result.log ]]; then
-            echo "result.log not found!"
+          if [[ ! -f report.xml ]]; then
+            echo "report.xml not found!"
             echo "Frontend Test Result: Unknown"
             exit 0
           fi
-          PASS_COUNT=$(grep -c 'PASSED' result.log || echo 0)
-          FAIL_COUNT=$(grep -c 'FAILED' result.log || echo 0)
+
+          PASS_COUNT=$(grep -c 'PASSED' report.xml || echo 0)
+          FAIL_COUNT=$(grep -c 'FAILED' report.xml || echo 0)
           echo "Frontend Test Result: Passed $PASS_COUNT, Failed $FAIL_COUNT"
           echo "Test suite executed: frontend-test-suite"
           echo "Dependency: build-frontend job"
@@ -79,7 +78,7 @@ jobs:
       backend_commit_id: ${{ steps.get_commit_id.outputs.commit_id }}
     steps:
       - name: Check out repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v2
 
       - name: Get Git commit ID
         id: get_commit_id
@@ -90,6 +89,7 @@ jobs:
       - name: Build backend
         run: |
           echo "Building backend..."
+          # Simulate a build command
           sleep 2
 
       - name: Display commit information
@@ -103,7 +103,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v2
 
       - name: Install dependencies
         run: |
@@ -113,10 +113,7 @@ jobs:
       - name: Run backend tests (Pytest)
         run: |
           echo "Running backend tests..."
-          pytest tests/backend/test_checkout.py \
-            --junitxml=report.xml \
-            --maxfail=1 --disable-warnings --capture=no > result.log || true
-          tail -n 10 result.log
+          pytest tests/backend/test_checkout.py --junitxml=report.xml --maxfail=1 --disable-warnings --capture=no || true
 
       - name: Upload backend test report
         uses: actions/upload-artifact@v3
@@ -126,13 +123,14 @@ jobs:
 
       - name: Output backend test result
         run: |
-          if [[ ! -f result.log ]]; then
-            echo "result.log not found!"
+          if [[ ! -f report.xml ]]; then
+            echo "report.xml not found!"
             echo "Backend Test Result: Unknown"
             exit 0
           fi
-          PASS_COUNT=$(grep -c 'PASSED' result.log || echo 0)
-          FAIL_COUNT=$(grep -c 'FAILED' result.log || echo 0)
+
+          PASS_COUNT=$(grep -c 'PASSED' report.xml || echo 0)
+          FAIL_COUNT=$(grep -c 'FAILED' report.xml || echo 0)
           echo "Backend Test Result: Passed $PASS_COUNT, Failed $FAIL_COUNT"
           echo "Test suite executed: backend-test-suite"
           echo "Dependency: build-backend job"
