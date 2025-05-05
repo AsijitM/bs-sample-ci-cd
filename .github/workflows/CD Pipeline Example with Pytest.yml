@@ -33,10 +33,12 @@ jobs:
 
       - name: Generate test summary
         run: |
-          PASS_COUNT=$(grep -c 'PASSED' report.xml || echo 0)
-          FAIL_COUNT=$(grep -c 'FAILED' report.xml || echo 0)
+          # Parse the report.xml file for test results
+          PASS_COUNT=$(grep -o 'tests/.*PASSED' report.xml | wc -l || echo 0)
+          FAIL_COUNT=$(grep -o 'tests/.*FAILED' report.xml | wc -l || echo 0)
           echo "Test Result: Passed $PASS_COUNT, Failed $FAIL_COUNT"
           echo "Test Summary: {\"passed\": $PASS_COUNT, \"failed\": $FAIL_COUNT}" > test_summary.json
+
 
       - name: Upload test summary
         uses: actions/upload-artifact@v4.6.2
