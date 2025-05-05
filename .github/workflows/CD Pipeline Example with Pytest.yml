@@ -33,28 +33,20 @@ jobs:
 
       - name: Generate test summary
         run: |
-          # Debug: Print the content of report.xml
-          echo "=== XML Content ==="
-          cat report.xml
-          echo "=== End XML Content ==="
+          # Install xmlstarlet
+          sudo apt-get update
+          sudo apt-get install -y xmlstarlet
 
-          # Debug: Test grep commands individually
-          echo "=== Testing grep commands ==="
-          echo "Testing testcase count:"
-          grep '<testcase ' report.xml
-          echo "Testing failure count:"
-          grep '<testcase.*<failure' report.xml
-          echo "=== End grep tests ==="
-
-          # Original commands with debug output
-          TOTAL_TESTS=$(grep -c '<testcase ' report.xml || echo 0)
-          FAIL_COUNT=$(grep -c '<testcase.*<failure' report.xml || echo 0)
-
-          echo "TOTAL_TESTS=$TOTAL_TESTS"
-          echo "FAIL_COUNT=$FAIL_COUNT"
+          # Use xmlstarlet to count tests and failures
+          TOTAL_TESTS=$(xmlstarlet sel -t -v "count(//testcase)" report.xml)
+          FAIL_COUNT=$(xmlstarlet sel -t -v "count(//testcase/failure)" report.xml)
 
           # Calculate passed tests
           PASS_COUNT=$((TOTAL_TESTS - FAIL_COUNT))
+
+          echo "TOTAL_TESTS=$TOTAL_TESTS"
+          echo "FAIL_COUNT=$FAIL_COUNT"
+          echo "PASS_COUNT=$PASS_COUNT"
 
           # Output the test results
           echo "Test Result: Passed $PASS_COUNT, Failed $FAIL_COUNT"
