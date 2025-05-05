@@ -1,0 +1,17 @@
+{
+  "name": "poc",
+  "version": "1.0.0",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "build": "next build",
+    "lint": "eslint ./src",
+    "test": "node ./run-tests.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": ""
+}
