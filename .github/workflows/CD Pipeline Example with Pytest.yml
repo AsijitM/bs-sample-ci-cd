@@ -34,8 +34,8 @@ jobs:
       - name: Generate test summary
         run: |
           # Count total tests and failed tests from the XML
-          TOTAL_TESTS=$(grep -c '<testcase' report.xml || echo 0)
-          FAIL_COUNT=$(grep -c '<failure>' report.xml || echo 0)
+          TOTAL_TESTS=$(grep -c '<testcase ' report.xml || echo 0)
+          FAIL_COUNT=$(grep -c '<testcase.*<failure' report.xml || echo 0)
 
           # Calculate passed tests
           PASS_COUNT=$((TOTAL_TESTS - FAIL_COUNT))
