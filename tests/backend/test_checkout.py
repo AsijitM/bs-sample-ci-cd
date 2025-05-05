@@ -3,4 +3,5 @@ import pytest
 @pytest.mark.module("checkout")
 @pytest.mark.priority("medium")
 def test_checkout():
-    assert True  # Simulating a failing test
+    pytest.xfail("Test intentionally marked as expected to fail")
+    # assert False  # Simulating a failing test
