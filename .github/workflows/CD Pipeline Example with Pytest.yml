@@ -15,7 +15,7 @@ jobs:
       frontend_commit_id: ${{ steps.get_commit_id.outputs.commit_id }}
     steps:
       - name: Check out repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Get Git commit ID
         id: get_commit_id
@@ -40,7 +40,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Install dependencies
         run: |
@@ -58,19 +58,18 @@ jobs:
           name: frontend-test-report
           path: report.xml
 
-      - name: Output frontend test result
+      - name: Generate frontend test summary
         run: |
-          if [[ ! -f report.xml ]]; then
-            echo "report.xml not found!"
-            echo "Frontend Test Result: Unknown"
-            exit 0
-          fi
-
           PASS_COUNT=$(grep -c 'PASSED' report.xml || echo 0)
           FAIL_COUNT=$(grep -c 'FAILED' report.xml || echo 0)
           echo "Frontend Test Result: Passed $PASS_COUNT, Failed $FAIL_COUNT"
-          echo "Test suite executed: frontend-test-suite"
-          echo "Dependency: build-frontend job"
+          echo "Frontend Test Result: {\"passed\": $PASS_COUNT, \"failed\": $FAIL_COUNT}" > test_summary.json
+
+      - name: Upload frontend test summary
+        uses: actions/upload-artifact@v3
+        with:
+          name: frontend-test-summary
+          path: test_summary.json
 
   build-backend:
     runs-on: ubuntu-latest
@@ -78,7 +77,7 @@ jobs:
       backend_commit_id: ${{ steps.get_commit_id.outputs.commit_id }}
     steps:
       - name: Check out repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Get Git commit ID
         id: get_commit_id
@@ -103,7 +102,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Install dependencies
         run: |
@@ -121,16 +120,15 @@ jobs:
           name: backend-test-report
           path: report.xml
 
-      - name: Output backend test result
+      - name: Generate backend test summary
         run: |
-          if [[ ! -f report.xml ]]; then
-            echo "report.xml not found!"
-            echo "Backend Test Result: Unknown"
-            exit 0
-          fi
-
           PASS_COUNT=$(grep -c 'PASSED' report.xml || echo 0)
           FAIL_COUNT=$(grep -c 'FAILED' report.xml || echo 0)
           echo "Backend Test Result: Passed $PASS_COUNT, Failed $FAIL_COUNT"
-          echo "Test suite executed: backend-test-suite"
-          echo "Dependency: build-backend job"
+          echo "Backend Test Result: {\"passed\": $PASS_COUNT, \"failed\": $FAIL_COUNT}" > test_summary.json
+
+      - name: Upload backend test summary
+        uses: actions/upload-artifact@v3
+        with:
+          name: backend-test-summary
+          path: test_summary.json
