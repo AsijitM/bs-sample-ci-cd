@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4.2.2
 
       - name: Install dependencies
         run: |
@@ -26,7 +26,7 @@ jobs:
           pytest tests/frontend/test_login.py tests/backend/test_checkout.py --junitxml=report.xml --maxfail=1 --disable-warnings --capture=no || true
 
       - name: Upload test report
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4.6.2
         with:
           name: test-report
           path: report.xml
@@ -39,7 +39,7 @@ jobs:
           echo "Test Summary: {\"passed\": $PASS_COUNT, \"failed\": $FAIL_COUNT}" > test_summary.json
 
       - name: Upload test summary
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4.6.2
         with:
           name: test-summary
           path: test_summary.json
