@@ -22,4 +22,8 @@ def test_login_another_case():
 @pytest.mark.priority("high")
 def test_login_yet_another_case():
     assert True
-    
+
+@pytest.mark.module("login")
+@pytest.mark.priority("medium")
+def test_login_different_case():
+    assert True
