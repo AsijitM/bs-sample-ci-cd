@@ -7,3 +7,8 @@ def test_login():
 
 def test_login_failure():
     assert False  # Simulating a failing test
+
+@pytest.mark.module("login")
+@pytest.mark.priority("low")
+def test_login_edge_case():
+    assert True
