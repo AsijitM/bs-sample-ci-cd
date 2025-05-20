@@ -12,3 +12,8 @@ def test_login_failure():
 @pytest.mark.priority("low")
 def test_login_edge_case():
     assert True
+
+@pytest.mark.module("login")
+@pytest.mark.priority("medium")
+def test_login_another_case():
+    assert True
